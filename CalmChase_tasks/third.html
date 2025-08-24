@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Day 3: Student Marks Calculator</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f7fa;
+        }
+        header {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+        h1, h2, h3 {
+            color: #2c3e50;
+        }
+        .student-form {
+            background: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        input, button {
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+            margin: 0.5rem 0;
+        }
+        button {
+            background: #3498db;
+            color: white;
+            cursor: pointer;
+            border: none;
+            transition: background 0.3s;
+        }
+        button:hover {
+            background: #2980b9;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+        }
+        th, td {
+            padding: 0.8rem;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        .stat-box {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 5px;
+            text-align: center;
+            border-left: 4px solid #3498db;
+        }
+        .subject-inputs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+        .actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        .secondary-btn {
+            background: #95a5a6;
+        }
+        .secondary-btn:hover {
+            background: #7f8c8d;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Day 3: Student Marks Calculator</h1>
+        <p>Using Array Methods (map, filter, reduce) and Objects</p>
+    </header>
+
+    <div class="student-form">
+        <h2>Add Student</h2>
+        <input type="text" id="studentName" placeholder="Student Name">
+        <div id="subjectInputs">
+            <div class="subject-inputs">
+                <input type="text" placeholder="Subject" class="subject">
+                <input type="number" placeholder="Marks" class="marks" min="0" max="100">
+            </div>
+        </div>
+        <button onclick="addSubject()">+ Add Subject</button>
+        <button onclick="addStudent()">Add Student</button>
+    </div>
+    
+    <div>
+        <h2>Student Records</h2>
+        <table id="studentsTable">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Subjects & Marks</th>
+                    <th>Total</th>
+                    <th>Average</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody id="studentsList">
+                <!-- Student data will be inserted here -->
+            </tbody>
+        </table>
+        
+        <div class="stats">
+            <div class="stat-box">
+                <h3>Class Average</h3>
+                <p id="classAverage">0</p>
+            </div>
+            <div class="stat-box">
+                <h3>Top Student</h3>
+                <p id="topStudent">None</p>
+            </div>
+            <div class="stat-box">
+                <h3>Passing Rate</h3>
+                <p id="passingRate">0%</p>
+            </div>
+        </div>
+        
+        <div class="actions">
+            <button onclick="calculateStats()">Calculate Statistics</button>
+            <button onclick="filterPassed()" class="secondary-btn">Show Passing Students</button>
+            <button onclick="showAll()" class="secondary-btn">Show All Students</button>
+        </div>
+    </div>
+
+    <script>
+        // Student data storage
+        let students = [];
+        
+        // Add a new subject input field
+        function addSubject() {
+            const container = document.getElementById('subjectInputs');
+            const div = document.createElement('div');
+            div.className = 'subject-inputs';
+            div.innerHTML = `
+                <input type="text" placeholder="Subject" class="subject">
+                <input type="number" placeholder="Marks" class="marks" min="0" max="100">
+            `;
+            container.appendChild(div);
+        }
+        
+        // Add a new student
+        function addStudent() {
+            const name = document.getElementById('studentName').value;
+            if (!name) {
+                alert('Please enter a student name');
+                return;
+            }
+            
+            const subjectInputs = document.querySelectorAll('.subject-inputs');
+            const subjects = {};
+            
+            subjectInputs.forEach(input => {
+                const subject = input.querySelector('.subject').value;
+                const marks = parseInt(input.querySelector('.marks').value);
+                
+                if (subject && !isNaN(marks)) {
+                    subjects[subject] = marks;
+                }
+            });
+            
+            if (Object.keys(subjects).length === 0) {
+                alert('Please add at least one subject with marks');
+                return;
+            }
+            
+            const student = {
+                id: Date.now(),
+                name,
+                subjects
+            };
+            
+            students.push(student);
+            renderStudents();
+            document.getElementById('studentName').value = '';
+            document.getElementById('subjectInputs').innerHTML = `
+                <div class="subject-inputs">
+                    <input type="text" placeholder="Subject" class="subject">
+                    <input type="number" placeholder="Marks" class="marks" min="0" max="100">
+                </div>
+            `;
+        }
+        
+        // Render students in the table
+        function renderStudents() {
+            const tbody = document.getElementById('studentsList');
+            tbody.innerHTML = '';
+            
+            students.forEach(student => {
+                const tr = document.createElement('tr');
+                
+                // Calculate total and average
+                const marks = Object.values(student.subjects);
+                const total = marks.reduce((sum, mark) => sum + mark, 0);
+                const average = total / marks.length;
+                const status = average >= 50 ? 'Pass' : 'Fail';
+                
+                tr.innerHTML = `
+                    <td>${student.name}</td>
+                    <td>${Object.entries(student.subjects).map(([subject, mark]) => 
+                        `${subject}: ${mark}`).join(', ')}</td>
+                    <td>${total}</td>
+                    <td>${average.toFixed(2)}</td>
+                    <td>${status}</td>
+                `;
+                
+                tbody.appendChild(tr);
+            });
+        }
+        
+        // Calculate class statistics using array methods
+        function calculateStats() {
+            if (students.length === 0) {
+                alert('No students to calculate statistics');
+                return;
+            }
+            
+            // Calculate class average using reduce
+            const classAverage = students.reduce((sum, student) => {
+                const marks = Object.values(student.subjects);
+                const total = marks.reduce((s, mark) => s + mark, 0);
+                return sum + (total/marks.length);
+            }, 0) / students.length;
+            
+            document.getElementById('classAverage').textContent = classAverage.toFixed(2);
+            
+            // Find top student using reduce
+            const topStudent = students.reduce((top, student) => {
+                const marks = Object.values(student.subjects);
+                const average = marks.reduce((s, mark) => s + mark, 0) / marks.length;
+                return average > top.average ? { name: student.name, average } : top;
+            }, { name: '', average: 0 });
+            
+            document.getElementById('topStudent').textContent = 
+                `${topStudent.name} (${topStudent.average.toFixed(2)})`;
+            
+            // Calculate passing rate using filter
+            const passedCount = students.filter(student => {
+                const marks = Object.values(student.subjects);
+                const average = marks.reduce((s, mark) => s + mark, 0) / marks.length;
+                return average >= 50;
+            }).length;
+            
+            const passingRate = (passedCount / students.length) * 100;
+            document.getElementById('passingRate').textContent = `${passingRate.toFixed(2)}%`;
+        }
+        
+        // Filter to show only passing students
+        function filterPassed() {
+            const passedStudents = students.filter(student => {
+                const marks = Object.values(student.subjects);
+                const average = marks.reduce((s, mark) => s + mark, 0) / marks.length;
+                return average >= 50;
+            });
+            
+            renderFilteredStudents(passedStudents);
+        }
+        
+        // Show all students
+        function showAll() {
+            renderStudents();
+        }
+        
+        // Render filtered students
+        function renderFilteredStudents(filteredStudents) {
+            const tbody = document.getElementById('studentsList');
+            tbody.innerHTML = '';
+            
+            filteredStudents.forEach(student => {
+                const tr = document.createElement('tr');
+                
+                const marks = Object.values(student.subjects);
+                const total = marks.reduce((sum, mark) => sum + mark, 0);
+                const average = total / marks.length;
+                const status = average >= 50 ? 'Pass' : 'Fail';
+                
+                tr.innerHTML = `
+                    <td>${student.name}</td>
+                    <td>${Object.entries(student.subjects).map(([subject, mark]) => 
+                        `${subject}: ${mark}`).join(', ')}</td>
+                    <td>${total}</td>
+                    <td>${average.toFixed(2)}</td>
+                    <td>${status}</td>
+                `;
+                
+                tbody.appendChild(tr);
+            });
+        }
+        
+        // Initialize with some sample data
+        window.onload = function() {
+            students = [
+                {
+                    id: 1,
+                    name: "Vedant Ambh",
+                    subjects: { Math: 85, Science: 92, English: 78 }
+                },
+                {
+                    id: 2,
+                    name: "Aanya Singh",
+                    subjects: { Math: 72, Science: 68, English: 85 }
+                },
+                {
+                    id: 3,
+                    name: "Sharon Sharma",
+                    subjects: { Math: 45, Science: 52, English: 48 }
+                }
+            ];
+            
+            renderStudents();
+            calculateStats();
+        };
+    </script>
+</body>
+</html>
