@@ -1,123 +1,92 @@
 import React, { useState } from "react";
 
-export default function TodoApp() {
-  const [tasks, setTasks] = useState([]);
-  const [input, setInput] = useState("");
+export default function StateManagementTask() {
+  // Counter state
+  const [count, setCount] = useState(0);
 
-  // Add new task
-  const addTask = () => {
-    if (input.trim() === "") return;
-    const newTask = {
-      id: Date.now(),
-      text: input,
-      completed: false,
-    };
-    setTasks([...tasks, newTask]);
-    setInput("");
-  };
-
-  // Toggle complete
-  const toggleTask = (id) => {
-    setTasks(
-      tasks.map((task) =>
-        task.id === id ? { ...task, completed: !task.completed } : task
-      )
-    );
-  };
-
-  // Delete task
-  const deleteTask = (id) => {
-    setTasks(tasks.filter((task) => task.id !== id));
-  };
+  // Input text state
+  const [text, setText] = useState("");
 
   return (
     <div style={styles.container}>
-      <h2>To-Do List</h2>
-      <div style={styles.inputRow}>
-        <input
-          type="text"
-          placeholder="Add a new task..."
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          style={styles.input}
-        />
-        <button onClick={addTask} style={styles.addBtn}>Add</button>
+      <h2>State Management Task</h2>
+
+      {/* Counter Section */}
+      <div style={styles.section}>
+        <h3>Counter</h3>
+        <p style={styles.count}>{count}</p>
+        <div>
+          <button style={styles.btn} onClick={() => setCount(count + 1)}>+</button>
+          <button style={styles.btn} onClick={() => setCount(count - 1)}>-</button>
+          <button style={styles.resetBtn} onClick={() => setCount(0)}>Reset</button>
+        </div>
       </div>
 
-      <ul style={styles.list}>
-        {tasks.map((task) => (
-          <li key={task.id} style={styles.listItem}>
-            <span
-              onClick={() => toggleTask(task.id)}
-              style={{
-                ...styles.taskText,
-                textDecoration: task.completed ? "line-through" : "none",
-                color: task.completed ? "#888" : "#fff",
-              }}
-            >
-              {task.text}
-            </span>
-            <button onClick={() => deleteTask(task.id)} style={styles.deleteBtn}>
-              ❌
-            </button>
-          </li>
-        ))}
-      </ul>
+      {/* Live Text Preview Section */}
+      <div style={styles.section}>
+        <h3>Live Text Preview</h3>
+        <input
+          type="text"
+          placeholder="Type something..."
+          value={text}
+          onChange={(e) => setText(e.target.value)}
+          style={styles.input}
+        />
+        <p style={styles.preview}>Preview: {text}</p>
+      </div>
     </div>
   );
 }
 
 const styles = {
   container: {
-    width: "350px",
+    width: "400px",
     margin: "40px auto",
     padding: "20px",
     background: "#1f1f2e",
     color: "#fff",
     borderRadius: "10px",
     boxShadow: "0 4px 10px rgba(0,0,0,.3)",
+    textAlign: "center",
   },
-  inputRow: {
-    display: "flex",
-    marginBottom: "15px",
+  section: {
+    marginBottom: "20px",
   },
-  input: {
-    flex: 1,
-    padding: "10px",
-    borderRadius: "6px",
-    border: "none",
-    outline: "none",
+  count: {
+    fontSize: "2rem",
+    margin: "10px 0",
   },
-  addBtn: {
-    marginLeft: "8px",
+  btn: {
+    margin: "5px",
     padding: "10px 15px",
     background: "#4f39ff",
     color: "#fff",
     border: "none",
     borderRadius: "6px",
     cursor: "pointer",
+    fontSize: "16px",
   },
-  list: {
-    listStyle: "none",
-    padding: 0,
-  },
-  listItem: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: "10px",
-    background: "#2d2d40",
-    padding: "8px 12px",
-    borderRadius: "6px",
-  },
-  taskText: {
-    cursor: "pointer",
-  },
-  deleteBtn: {
+  resetBtn: {
+    margin: "5px",
+    padding: "10px 15px",
+    background: "#ff3b3b",
+    color: "#fff",
     border: "none",
-    background: "transparent",
-    color: "#ff6ec7",
+    borderRadius: "6px",
     cursor: "pointer",
     fontSize: "16px",
   },
+  input: {
+    width: "80%",
+    padding: "10px",
+    borderRadius: "6px",
+    border: "none",
+    marginTop: "10px",
+  },
+  preview: {
+    marginTop: "15px",
+    fontStyle: "italic",
+    color: "#cfcfcf",
+  },
 };
+
