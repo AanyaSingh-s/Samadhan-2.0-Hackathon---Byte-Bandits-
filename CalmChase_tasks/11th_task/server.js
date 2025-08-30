@@ -7,7 +7,7 @@ app.use(express.json());
 
 let students = [
   { id: 1, name: "Aanya", age: 20 },
-  { id: 2, name: "Rahul", age: 22 }
+  { id: 2, name: "Vedant", age: 22 }
 ];
 
 app.get("/students", (req, res) => {
