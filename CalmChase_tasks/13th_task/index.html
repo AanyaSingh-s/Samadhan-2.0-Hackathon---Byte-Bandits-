@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Notes App</title>
+</head>
+<body>
+  <h1>Notes App</h1>
+
+  <input id="title" placeholder="Title">
+  <input id="content" placeholder="Content">
+  <button onclick="addNote()">Add Note</button>
+
+  <ul id="notesList"></ul>
+
+  <script>
+    const API_URL = "http://localhost:5000/notes";
+
+    async function fetchNotes() {
+      const res = await fetch(API_URL);
+      const notes = await res.json();
+      const list = document.getElementById("notesList");
+      list.innerHTML = "";
+      notes.forEach(note => {
+        const li = document.createElement("li");
+        li.innerHTML = `
+          <b>${note.title}</b>: ${note.content}
+          <button onclick="deleteNote('${note._id}')">Delete</button>
+        `;
+        list.appendChild(li);
+      });
+    }
+
+    async function addNote() {
+      const title = document.getElementById("title").value;
+      const content = document.getElementById("content").value;
+      await fetch(API_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ title, content }),
+      });
+      fetchNotes();
+    }
+
+    async function deleteNote(id) {
+      await fetch(`${API_URL}/${id}`, { method: "DELETE" });
+      fetchNotes();
+    }
+
+    fetchNotes();
+  </script>
+</body>
+</html>
